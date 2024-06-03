@@ -29,10 +29,18 @@ async function run() {
 
   //  collections
   const reviewCollection = client.db("fitnessDB").collection("reviews")
+ const trainersCollection = client.db("fitnessDB").collection("trainers")
+  
 
   // get data for review
   app.get('/reviews', async(req, res) => {
     const result = await reviewCollection.find().toArray();
+    res.send(result);
+  })
+
+  // get all trainers from db
+  app.get('/trainers', async(req, res) => {
+    const result = await trainersCollection.find().toArray();
     res.send(result);
   })
 
