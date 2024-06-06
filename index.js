@@ -31,6 +31,7 @@ async function run() {
   const userCollection = client.db("fitnessDB").collection("users")
   const reviewCollection = client.db("fitnessDB").collection("reviews")
  const trainersCollection = client.db("fitnessDB").collection("trainers")
+ const newsletterCollection = client.db("fitnessDB").collection("subscribers")
   
 //  save user data to the database
 app.post('/users', async(req, res) => {
@@ -43,6 +44,13 @@ app.post('/users', async(req, res) => {
   }
   const result = await userCollection.insertOne(user);
   res.send(result);
+})
+
+// save newsletter subscribers in mongodb
+app.post('/subscribers', async(req,res) => {
+  const subscriber = req.body;
+  const result = await newsletterCollection.insertOne(subscriber);
+  res.send(result)
 })
 
   // get data for review
