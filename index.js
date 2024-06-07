@@ -32,6 +32,7 @@ async function run() {
   const reviewCollection = client.db("fitnessDB").collection("reviews")
  const trainersCollection = client.db("fitnessDB").collection("trainers")
  const newsletterCollection = client.db("fitnessDB").collection("subscribers")
+ const pendingCollection = client.db("fitnessDB").collection("pending")
   
 //  save user data to the database
 app.put('/users', async(req, res) => {
@@ -55,10 +56,15 @@ if(isExist)  return res.send(isExist)
 })
 
 
-app.post('/users', async(req,res) => {
+app.post('/pending', async(req,res) => {
   const applier = req.body;
-  const result = await userCollection.insertOne(applier);
+  const result = await pendingCollection.insertOne(applier);
   res.send(result)
+})
+
+app.get('/pending', async(req, res) => {
+  const result = await pendingCollection.find().toArray();
+  res.send(result);
 })
 
 // get a user info for useRole hook
