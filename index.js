@@ -75,6 +75,12 @@ app.post('/subscribers', async(req,res) => {
   res.send(result)
 })
 
+// get data to show newsletter subscribers in dashboard
+app.get('/subscribers', async(req, res) => {
+  const result = await newsletterCollection.find().toArray();
+  res.send(result);
+})
+
   // get data for review
   app.get('/reviews', async(req, res) => {
     const result = await reviewCollection.find().toArray();
