@@ -40,8 +40,8 @@ app.put('/users', async(req, res) => {
   
   //  if user already exists in db
   const isExist = await userCollection.findOne(query)
-if(isExist) return res.send(isExist)
-
+if(isExist)  return res.send(isExist)
+  
   // save user for first time
   const options = {upsert: true}
   const updateDoc = {
@@ -51,6 +51,20 @@ if(isExist) return res.send(isExist)
   }
   
   const result = await userCollection.updateOne(query, updateDoc, options);
+  res.send(result);
+})
+
+
+app.post('/users', async(req,res) => {
+  const applier = req.body;
+  const result = await userCollection.insertOne(applier);
+  res.send(result)
+})
+
+// get a user info for useRole hook
+app.get('/users/:email', async(req,res) =>{
+  const email = req.params.email;
+  const result = await userCollection.findOne({email})
   res.send(result);
 })
 
