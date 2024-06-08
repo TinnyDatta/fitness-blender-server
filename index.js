@@ -137,6 +137,13 @@ app.get('/subscribers', async(req, res) => {
     res.send(result);
   })
 
+  // post class to db
+  app.post('/classes', async(req,res) => {
+    const query = req.body;
+    const result = await classCollection.insertOne(query);
+    res.send(result);
+  })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
