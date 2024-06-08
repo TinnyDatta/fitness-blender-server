@@ -33,6 +33,7 @@ async function run() {
  const trainersCollection = client.db("fitnessDB").collection("trainers")
  const newsletterCollection = client.db("fitnessDB").collection("subscribers")
  const pendingCollection = client.db("fitnessDB").collection("pending")
+ const classCollection = client.db("fitnessDB").collection("classes")
   
 //  save user data to the database
 app.put('/users', async(req, res) => {
@@ -127,6 +128,12 @@ app.get('/subscribers', async(req, res) => {
     const id = req.params.id;
     const query = {_id: new ObjectId(id)};
     const result = await trainersCollection.findOne(query);
+    res.send(result);
+  })
+
+  // get all classes
+  app.get('/classes', async(req, res) => {
+    const result = await classCollection.find().toArray();
     res.send(result);
   })
 
