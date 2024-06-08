@@ -34,6 +34,7 @@ async function run() {
  const newsletterCollection = client.db("fitnessDB").collection("subscribers")
  const pendingCollection = client.db("fitnessDB").collection("pending")
  const classCollection = client.db("fitnessDB").collection("classes")
+ const slotCollection = client.db("fitnessDB").collection("slots")
   
 //  save user data to the database
 app.put('/users', async(req, res) => {
@@ -131,6 +132,14 @@ app.get('/subscribers', async(req, res) => {
     res.send(result);
   })
 
+  // get single slot data for booked page
+  app.get('/details/:id/slot/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await trainersCollection.findOne(query);
+    res.send(result);
+  })
+
   // get all classes
   app.get('/classes', async(req, res) => {
     const result = await classCollection.find().toArray();
@@ -142,6 +151,13 @@ app.get('/subscribers', async(req, res) => {
     const query = req.body;
     const result = await classCollection.insertOne(query);
     res.send(result);
+  })
+
+  // post slot to db
+  app.post('/slots', async(req,res) => {
+    const subscriber = req.body;
+    const result = await slotCollection.insertOne(subscriber);
+    res.send(result)
   })
 
 
