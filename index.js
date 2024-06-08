@@ -68,6 +68,19 @@ app.get('/pending', async(req, res) => {
   res.send(result);
 })
 
+// make trainer
+app.patch('/pending/trainer/:id', async(req, res) => {
+ const id = req.params.id;
+ const filter = {_id: new ObjectId(id)};
+ const updateDoc = {
+  $set: {
+    role: 'trainer'
+  }
+ }
+ const result = await pendingCollection.updateOne(filter, updateDoc)
+ res.send(result);
+})
+
 // show applied trainers details
 app.get('/dashboard/applied-trainer/details/:id', async(req, res) => {
   const id = req.params.id;
