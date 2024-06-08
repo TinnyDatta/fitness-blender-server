@@ -55,17 +55,27 @@ if(isExist)  return res.send(isExist)
   res.send(result);
 })
 
-
+// save applied trainers
 app.post('/pending', async(req,res) => {
   const applier = req.body;
   const result = await pendingCollection.insertOne(applier);
   res.send(result)
 })
 
+// show applied trainers
 app.get('/pending', async(req, res) => {
   const result = await pendingCollection.find().toArray();
   res.send(result);
 })
+
+// show applied trainers details
+app.get('/dashboard/applied-trainer/details/:id', async(req, res) => {
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)};
+  const result = await pendingCollection.findOne(query);
+  res.send(result);
+})
+
 
 // get a user info for useRole hook
 app.get('/users/:email', async(req,res) =>{
