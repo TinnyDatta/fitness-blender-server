@@ -142,7 +142,12 @@ app.get('/subscribers', async(req, res) => {
 
   // get all classes
   app.get('/classes', async(req, res) => {
-    const result = await classCollection.find().toArray();
+    const filter = req.query;
+    const query = {
+      className: {$regex: filter.search, $options: 'i'}
+    }
+    const cursor = classCollection.find(query);
+    const result = await cursor.toArray();
     res.send(result);
   })
 
