@@ -35,6 +35,7 @@ async function run() {
  const pendingCollection = client.db("fitnessDB").collection("pending")
  const classCollection = client.db("fitnessDB").collection("classes")
  const slotCollection = client.db("fitnessDB").collection("slots")
+ const postsCollection = client.db("fitnessDB").collection("posts")
   
 //  save user data to the database
 app.put('/users', async(req, res) => {
@@ -146,8 +147,7 @@ app.get('/subscribers', async(req, res) => {
     const query = {
       className: {$regex: filter.search, $options: 'i'}
     }
-    const cursor = classCollection.find(query);
-    const result = await cursor.toArray();
+    const result = await classCollection.find(query).toArray();
     res.send(result);
   })
 
@@ -170,6 +170,13 @@ app.get('/subscribers', async(req, res) => {
     const result = await slotCollection.find().toArray();
     res.send(result);
   })
+
+  // get data for posts or forum
+  app.get('/posts', async(req, res) => {
+    const result = await postsCollection.find().toArray();
+    res.send(result);
+  })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
