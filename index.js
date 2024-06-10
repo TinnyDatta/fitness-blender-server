@@ -32,7 +32,6 @@ async function run() {
   const reviewCollection = client.db("fitnessDB").collection("reviews")
  const trainersCollection = client.db("fitnessDB").collection("trainers")
  const newsletterCollection = client.db("fitnessDB").collection("subscribers")
- const pendingCollection = client.db("fitnessDB").collection("pending")
  const classCollection = client.db("fitnessDB").collection("classes")
  const slotCollection = client.db("fitnessDB").collection("slots")
  const postsCollection = client.db("fitnessDB").collection("posts")
@@ -44,8 +43,21 @@ app.put('/users', async(req, res) => {
   
   //  if user already exists in db
   const isExist = await userCollection.findOne(query)
-if(isExist)  return res.send(isExist)
-  
+  // jodi na hoy tahole eita uncomment kore nicher sb delete korbo
+// if(isExist)  return res.send(isExist)
+
+if(isExist){
+  if(user.status === 'Pending'){
+  const result = await userCollection.updateOne(query, {
+    $set: {status: user?.status},
+  })
+  return res.send(result)
+  }else{
+    return res.send(isExist)
+  }
+}
+
+  // nicher gula thik ase
   // save user for first time
   const options = {upsert: true}
   const updateDoc = {
@@ -53,42 +65,59 @@ if(isExist)  return res.send(isExist)
       ...user,
     }
   }
-  
   const result = await userCollection.updateOne(query, updateDoc, options);
   res.send(result);
 })
 
-// save applied trainers
-app.post('/pending', async(req,res) => {
-  const applier = req.body;
-  const result = await pendingCollection.insertOne(applier);
-  res.send(result)
-})
-
-// show applied trainers
-app.get('/pending', async(req, res) => {
-  const result = await pendingCollection.find().toArray();
+// get all users
+app.get('/users', async(req, res) => {
+  const result = await userCollection.find({ status: 'Pending' }).toArray();
   res.send(result);
 })
 
-// make trainer
-app.patch('/pending/trainer/:id', async(req, res) => {
- const id = req.params.id;
- const filter = {_id: new ObjectId(id)};
- const updateDoc = {
-  $set: {
-    role: 'trainer'
+// update user role from pending to trainer
+app.patch('/users/update/:email', async(req, res)=>{
+  const email = req.params.email
+  const user = req.body
+  const query = {email}
+  const updateDoc = {
+    $set: {...user},
   }
- }
- const result = await pendingCollection.updateOne(filter, updateDoc)
- res.send(result);
+  const result = await userCollection.updateOne(query, updateDoc)
+  res.send(result)
 })
+
+// // save applied trainers
+// app.post('/pending', async(req,res) => {
+//   const applier = req.body;
+//   const result = await pendingCollection.insertOne(applier);
+//   res.send(result)
+// })
+
+// // show applied trainers
+// app.get('/pending', async(req, res) => {
+//   const result = await pendingCollection.find().toArray();
+//   res.send(result);
+// })
+
+// // make trainer
+// app.patch('/pending/trainer/:id', async(req, res) => {
+//  const id = req.params.id;
+//  const filter = {_id: new ObjectId(id)};
+//  const updateDoc = {
+//   $set: {
+//     role: 'trainer'
+//   }
+//  }
+//  const result = await pendingCollection.updateOne(filter, updateDoc)
+//  res.send(result);
+// })
 
 // show applied trainers details
 app.get('/dashboard/applied-trainer/details/:id', async(req, res) => {
   const id = req.params.id;
   const query = {_id: new ObjectId(id)};
-  const result = await pendingCollection.findOne(query);
+  const result = await userCollection.findOne(query);
   res.send(result);
 })
 
@@ -144,8 +173,9 @@ app.get('/subscribers', async(req, res) => {
   // get all classes
   app.get('/classes', async(req, res) => {
     const filter = req.query;
+    const search = filter.search ? String(filter.search) : '';
     const query = {
-      className: {$regex: filter.search, $options: 'i'}
+      className: {$regex: search, $options: 'i'}
     }
     const result = await classCollection.find(query).toArray();
     res.send(result);
@@ -171,10 +201,25 @@ app.get('/subscribers', async(req, res) => {
     res.send(result);
   })
 
+  // delete a slot
+  app.delete('/slots/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await slotCollection.deleteOne(query);
+    res.send(result)
+  })
+
   // get data for posts or forum
   app.get('/posts', async(req, res) => {
     const result = await postsCollection.find().toArray();
     res.send(result);
+  })
+
+  // add forum
+  app.post('/posts', async(req,res) => {
+    const poster = req.body;
+    const result = await postsCollection.insertOne(poster);
+    res.send(result)
   })
 
 
