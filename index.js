@@ -35,6 +35,9 @@ async function run() {
  const classCollection = client.db("fitnessDB").collection("classes")
  const slotCollection = client.db("fitnessDB").collection("slots")
  const postsCollection = client.db("fitnessDB").collection("posts")
+
+//  verify admin middleware
+
   
 //  save user data to the database
 app.put('/users', async(req, res) => {
@@ -43,7 +46,6 @@ app.put('/users', async(req, res) => {
   
   //  if user already exists in db
   const isExist = await userCollection.findOne(query)
-  // jodi na hoy tahole eita uncomment kore nicher sb delete korbo
 // if(isExist)  return res.send(isExist)
 
 if(isExist){
@@ -56,8 +58,6 @@ if(isExist){
     return res.send(isExist)
   }
 }
-
-  // nicher gula thik ase
   // save user for first time
   const options = {upsert: true}
   const updateDoc = {
@@ -86,32 +86,6 @@ app.patch('/users/update/:email', async(req, res)=>{
   const result = await userCollection.updateOne(query, updateDoc)
   res.send(result)
 })
-
-// // save applied trainers
-// app.post('/pending', async(req,res) => {
-//   const applier = req.body;
-//   const result = await pendingCollection.insertOne(applier);
-//   res.send(result)
-// })
-
-// // show applied trainers
-// app.get('/pending', async(req, res) => {
-//   const result = await pendingCollection.find().toArray();
-//   res.send(result);
-// })
-
-// // make trainer
-// app.patch('/pending/trainer/:id', async(req, res) => {
-//  const id = req.params.id;
-//  const filter = {_id: new ObjectId(id)};
-//  const updateDoc = {
-//   $set: {
-//     role: 'trainer'
-//   }
-//  }
-//  const result = await pendingCollection.updateOne(filter, updateDoc)
-//  res.send(result);
-// })
 
 // show applied trainers details
 app.get('/dashboard/applied-trainer/details/:id', async(req, res) => {
@@ -221,7 +195,6 @@ app.get('/subscribers', async(req, res) => {
     const result = await postsCollection.insertOne(poster);
     res.send(result)
   })
-
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
