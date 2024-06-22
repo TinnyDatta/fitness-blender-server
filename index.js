@@ -185,8 +185,19 @@ app.get('/subscribers', async(req, res) => {
 
   // get data for posts or forum
   app.get('/posts', async(req, res) => {
-    const result = await postsCollection.find().toArray();
+    console.log(req.query);
+    let size = parseInt(req.query.size) || 6
+    let page = parseInt(req.query.page) || 1
+    let skip = (page - 1) * size
+    const result = await postsCollection.find().skip(skip).limit(size).toArray();
     res.send(result);
+  })
+
+
+// get data count for posts or forum
+  app.get('/posts-count', async(req, res) => {
+    const count = await postsCollection.estimatedDocumentCount();
+    res.send({count});
   })
 
   // add forum
@@ -195,6 +206,7 @@ app.get('/subscribers', async(req, res) => {
     const result = await postsCollection.insertOne(poster);
     res.send(result)
   })
+  
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
