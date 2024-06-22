@@ -146,13 +146,22 @@ app.get('/subscribers', async(req, res) => {
 
   // get all classes
   app.get('/classes', async(req, res) => {
+    let size = parseInt(req.query.size) || 6
+    let page = parseInt(req.query.page) || 1
+    let skip = (page - 1) * size
     const filter = req.query;
     const search = filter.search ? String(filter.search) : '';
     const query = {
       className: {$regex: search, $options: 'i'}
     }
-    const result = await classCollection.find(query).toArray();
+    const result = await classCollection.find(query).skip(skip).limit(size).toArray();
     res.send(result);
+  })
+
+  // get data count for classes
+  app.get('/classes-count', async(req, res) => {
+    const count = await classCollection.estimatedDocumentCount();
+    res.send({count});
   })
 
   // post class to db
@@ -185,7 +194,6 @@ app.get('/subscribers', async(req, res) => {
 
   // get data for posts or forum
   app.get('/posts', async(req, res) => {
-    console.log(req.query);
     let size = parseInt(req.query.size) || 6
     let page = parseInt(req.query.page) || 1
     let skip = (page - 1) * size
@@ -209,8 +217,8 @@ app.get('/subscribers', async(req, res) => {
   
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
